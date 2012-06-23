@@ -1,0 +1,15 @@
+name: WarningPlugin
+version: 1.0
+main: com.ngc0202.warningplugin.WarningPlugin
+author: ngc0202
+commands:
+    warn:
+        description: Warnt ein Spieler
+        usage: /warnung <spieler/"mindern"> <grund/Spieler> [Zahl]
+        permission: warningplugin.warn
+        permission-message: Sie haben nicht die Erlaubnis, das zu tun.
+        permission-message-2: Zugriff verweigert!
+        
+    warns:
+        description: Zeigt an, wie viele Warnungen du hast.
+        usage: /warnungen
