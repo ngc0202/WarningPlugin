@@ -46,7 +46,10 @@ public class WarningPlugin extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         warns.load();
-        if (commandLabel.equalsIgnoreCase("warnung")) {
+        if (commandLabel.equalsIgnoreCase("warnen")) {
+            if (args.length == 0) {
+                return false;
+            }
             Player ply;
             if (args[0].equalsIgnoreCase("mindern")) {
                 if (!((args.length == 2) || (args.length == 3))) {
@@ -59,7 +62,7 @@ public class WarningPlugin extends JavaPlugin {
                 }
                 int remCnt = Integer.parseInt(args[2]);
                 if (!warns.keyExists(ply.getName())) {
-                    sender.sendMessage(ply.getName() + " hat schon keine Warnungen.");
+                    sender.sendMessage(ChatColor.BLUE + ply.getName() + " hat schon keine Warnungen.");
                     return true;
                 }
                 int newCnt = warns.getInt(ply.getName()) - remCnt;
@@ -68,7 +71,7 @@ public class WarningPlugin extends JavaPlugin {
                 }
                 warns.setInt(ply.getName(), newCnt);
                 warns.save();
-                sender.sendMessage(ply.getName() + " hat jetzt " + newCnt + " Warnungen.");
+                sender.sendMessage(ChatColor.BLUE + ply.getName() + " hat jetzt " + newCnt + " Warnungen.");
                 return true;
             } else {
                 if (args.length == 0) {
@@ -80,20 +83,22 @@ public class WarningPlugin extends JavaPlugin {
                     return false;
                 }
                 if (args.length == 1) {
-                    sender.sendMessage("Bitte gib einen Grund an.");
+                    sender.sendMessage(ChatColor.RED + "Bitte gib einen Grund an.");
                     return false;
                 }
                 int newCnt = warns.getInt(ply.getName()) + 1;
                 warns.setInt(ply.getName(), newCnt);
                 warns.save();
                 String reason = this.buildReason(args);
-                ply.sendMessage("Sie wurden verwarnt, für " + reason);
+                ply.sendMessage(ChatColor.RED + "Sie wurden verwarnt, für: \"" + reason + "\"");
                 if (newCnt == 4) {
                     bans.setLong(ply.getName(), System.currentTimeMillis() + 3600000L);
                     ply.setBanned(true);
+                    ply.kickPlayer("Verbannte für zu viel Warnungen. (1 Stunden)");
                 } else if (newCnt >= 10) {
                     bans.removeKey(ply.getName());
                     ply.setBanned(true);
+                    ply.kickPlayer("Verbannte für zu viel Warnungen.");
                 }
                 return true;
             }
@@ -123,9 +128,9 @@ public class WarningPlugin extends JavaPlugin {
         String reason = "";
         int len = args.length;
         for (int i = 1; i < len; i++) {
-            reason.concat(args[i]);
-            if (i != len - 1) {
-                reason.concat(" ");
+            reason += args[i];
+            if (i < (len - 1)) {
+                reason += " ";
             }
         }
         return reason;
