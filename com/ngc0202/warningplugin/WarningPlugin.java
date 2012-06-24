@@ -50,6 +50,10 @@ public class WarningPlugin extends JavaPlugin {
             if (args.length == 0) {
                 return false;
             }
+            if (sender.hasPermission("WarningPlugin.warnen")) {
+                sender.sendMessage(ChatColor.RED + this.getCommand("warnungen").getPermissionMessage());
+                return true;
+            }
             Player ply;
             if (args[0].equalsIgnoreCase("mindern")) {
                 if (!((args.length == 2) || (args.length == 3))) {
@@ -60,7 +64,16 @@ public class WarningPlugin extends JavaPlugin {
                     sender.sendMessage(ChatColor.RED + "Konnte nicht finden " + args[1] + ".");
                     return false;
                 }
-                int remCnt = Integer.parseInt(args[2]);
+                int remCnt;
+                if (args.length == 2) {
+                    remCnt = 1;
+                } else {
+                    remCnt = Integer.parseInt(args[2]);
+                }
+                if (remCnt < 1) {
+                    sender.sendMessage(ChatColor.RED + "Ungültig Zahl.");
+                    return true;
+                }
                 if (!warns.keyExists(ply.getName())) {
                     sender.sendMessage(ChatColor.BLUE + ply.getName() + " hat schon keine Warnungen.");
                     return true;
@@ -101,6 +114,22 @@ public class WarningPlugin extends JavaPlugin {
                     ply.kickPlayer("Verbannte für zu viel Warnungen.");
                 }
                 return true;
+            }
+        } else if (commandLabel.equalsIgnoreCase("warnungen")) {
+            if (args.length == 0) {
+                int warnings = warns.getInt(sender.getName());
+                sender.sendMessage(ChatColor.BLUE + "Du hast jetzt " + warnings + " Warnungen.");
+                return true;
+            } else if (args.length == 1) {
+                if (!sender.hasPermission("WarningPlugin.warnungen")) {
+                    sender.sendMessage(ChatColor.RED + "Sie haben nicht die Erlaubnis, das zu tun.");
+                    return true;
+                }
+                Player ply = getServer().getPlayer(args[0]);
+                int warnings = warns.getInt(ply.getName());
+                sender.sendMessage(ChatColor.BLUE + ply.getName() + " hat jetzt " + warnings + " Warnungen.");
+            } else {
+                return false;
             }
         }
         return false;

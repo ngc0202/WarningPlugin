@@ -13,5 +13,3 @@ commands:
     warnungen:
         description: Zeigt an, wie viele Warnungen jemand hat.
         usage: /warnungen <Spieler>
-        permission: warningplugin.warnungen
-        permission-message: Sie haben nicht die Erlaubnis, das zu tun.
