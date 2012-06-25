@@ -34,34 +34,34 @@ public class WarningPlugin extends JavaPlugin {
                 plugin.banCheckAll();
             }
         }, 1L, 6000L);
-        System.out.println(getDescription().getFullName() + " von ngc0202 ist aktiviert.");
+        System.out.println(getDescription().getFullName() + " by ngc0202 is activated.");
     }
 
     @Override
     public void onDisable() {
-        System.out.println(getDescription().getName() + " ist deaktiviert.");
+        System.out.println(getDescription().getName() + " is deactivated.");
         warns.save();
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         warns.load();
-        if (commandLabel.equalsIgnoreCase("warnen")) {
+        if (commandLabel.equalsIgnoreCase("warn")) {
             if (args.length == 0) {
                 return false;
             }
-            if (sender.hasPermission("WarningPlugin.warnen")) {
-                sender.sendMessage(ChatColor.RED + this.getCommand("warnungen").getPermissionMessage());
+            if (sender.hasPermission("WarningPlugin.warn")) {
+                sender.sendMessage(ChatColor.RED + this.getCommand("warn").getPermissionMessage());
                 return true;
             }
             Player ply;
-            if (args[0].equalsIgnoreCase("mindern")) {
+            if (args[0].equalsIgnoreCase("remove")) {
                 if (!((args.length == 2) || (args.length == 3))) {
                     return false;
                 }
                 ply = sender.getServer().getPlayer(args[1]);
                 if (ply == null) {
-                    sender.sendMessage(ChatColor.RED + "Konnte nicht finden " + args[1] + ".");
+                    sender.sendMessage(ChatColor.RED + "Couldn't find " + args[1] + ".");
                     return false;
                 }
                 int remCnt;
@@ -71,11 +71,11 @@ public class WarningPlugin extends JavaPlugin {
                     remCnt = Integer.parseInt(args[2]);
                 }
                 if (remCnt < 1) {
-                    sender.sendMessage(ChatColor.RED + "Ungültig Zahl.");
+                    sender.sendMessage(ChatColor.RED + "Invalid number.");
                     return true;
                 }
                 if (!warns.keyExists(ply.getName())) {
-                    sender.sendMessage(ChatColor.BLUE + ply.getName() + " hat schon keine Warnungen.");
+                    sender.sendMessage(ChatColor.BLUE + ply.getName() + " already has no warnings.");
                     return true;
                 }
                 int newCnt = warns.getInt(ply.getName()) - remCnt;
@@ -84,7 +84,7 @@ public class WarningPlugin extends JavaPlugin {
                 }
                 warns.setInt(ply.getName(), newCnt);
                 warns.save();
-                sender.sendMessage(ChatColor.BLUE + ply.getName() + " hat jetzt " + newCnt + " Warnungen.");
+                sender.sendMessage(ChatColor.BLUE + ply.getName() + " now has " + newCnt + " warnings.");
                 return true;
             } else {
                 if (args.length == 0) {
@@ -92,42 +92,42 @@ public class WarningPlugin extends JavaPlugin {
                 }
                 ply = sender.getServer().getPlayer(args[0]);
                 if (ply == null) {
-                    sender.sendMessage(ChatColor.RED + "Konnte nicht finden " + args[0] + ".");
+                    sender.sendMessage(ChatColor.RED + "Couldn't find " + args[0] + ".");
                     return false;
                 }
                 if (args.length == 1) {
-                    sender.sendMessage(ChatColor.RED + "Bitte gib einen Grund an.");
+                    sender.sendMessage(ChatColor.RED + "Please give a reason.");
                     return false;
                 }
                 int newCnt = warns.getInt(ply.getName()) + 1;
                 warns.setInt(ply.getName(), newCnt);
                 warns.save();
                 String reason = this.buildReason(args);
-                ply.sendMessage(ChatColor.RED + "Sie wurden verwarnt, für: \"" + reason + "\"");
+                ply.sendMessage(ChatColor.RED + "You've been warned for: \"" + reason + "\"");
                 if (newCnt == 4) {
                     bans.setLong(ply.getName(), System.currentTimeMillis() + 3600000L);
                     ply.setBanned(true);
-                    ply.kickPlayer("Verbannte für zu viel Warnungen. (1 Stunden)");
+                    ply.kickPlayer("Banned for having too many warnings. (1 hour)");
                 } else if (newCnt >= 10) {
                     bans.removeKey(ply.getName());
                     ply.setBanned(true);
-                    ply.kickPlayer("Verbannte für zu viel Warnungen.");
+                    ply.kickPlayer("Banned for having too many warnings.");
                 }
                 return true;
             }
-        } else if (commandLabel.equalsIgnoreCase("warnungen")) {
+        } else if (commandLabel.equalsIgnoreCase("warns")) {
             if (args.length == 0) {
                 int warnings = warns.getInt(sender.getName());
-                sender.sendMessage(ChatColor.BLUE + "Du hast jetzt " + warnings + " Warnungen.");
+                sender.sendMessage(ChatColor.BLUE + "You currently have " + warnings + " warnings.");
                 return true;
             } else if (args.length == 1) {
-                if (!sender.hasPermission("WarningPlugin.warnungen")) {
-                    sender.sendMessage(ChatColor.RED + "Sie haben nicht die Erlaubnis, das zu tun.");
+                if (!sender.hasPermission("WarningPlugin.warns")) {
+                    sender.sendMessage(ChatColor.RED + "You don't have permission to do that.");
                     return true;
                 }
                 Player ply = getServer().getPlayer(args[0]);
                 int warnings = warns.getInt(ply.getName());
-                sender.sendMessage(ChatColor.BLUE + ply.getName() + " hat jetzt " + warnings + " Warnungen.");
+                sender.sendMessage(ChatColor.BLUE + ply.getName() + " now has " + warnings + " warnings.");
             } else {
                 return false;
             }
@@ -149,7 +149,7 @@ public class WarningPlugin extends JavaPlugin {
                 }
             }
         } catch (Exception ex) {
-            System.out.println(ChatColor.RED + "Unfähig, die WarningPlugin-Bannliste zu laden.");
+            System.out.println(ChatColor.RED + "Unable to load the WarningPlugin ban list.");
         }
     }
 
